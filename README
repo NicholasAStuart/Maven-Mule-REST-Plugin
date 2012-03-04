@@ -1,3 +1,5 @@
 This is a project to utilize the RESTful interface that is provided for the Management console on Mule ESB's Enterprise Edition. 
 
 This is a personal project and is not affiliated with MuleSoft in any way.
+
+It still needs more testing by a variety of people, I really only can test for my test cases, so any feedback in welcome.

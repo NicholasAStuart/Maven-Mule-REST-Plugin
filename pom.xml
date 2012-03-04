@@ -1,0 +1,72 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>org.neuralsandbox</groupId>	
+	<artifactId>mule-rest</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
+	<packaging>maven-plugin</packaging>
+	
+	<properties>
+	  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	
+	<dependencies>
+	  <dependency>
+	    <groupId>org.apache.maven</groupId>
+	    <artifactId>maven-plugin-api</artifactId>
+	    <version>3.0.3</version>
+	  </dependency>
+	  <dependency>
+	  	<groupId>org.apache.httpcomponents</groupId>
+	  	<artifactId>httpclient</artifactId>
+	  	<version>4.1.2</version>
+	  </dependency>
+	  <dependency>
+	  	<groupId>org.apache.httpcomponents</groupId>
+	  	<artifactId>httpcore</artifactId>
+	  	<version>4.1.2</version>
+	  </dependency>
+	  <dependency>
+	  	<groupId>org.apache.httpcomponents</groupId>
+	  	<artifactId>httpmime</artifactId>
+	  	<version>4.1.2</version>
+	  </dependency>
+	  <dependency>
+	  	<groupId>org.mule.tools</groupId>
+	  	<artifactId>maven-mule-plugin</artifactId>
+	  	<version>1.7</version>
+	  	<type>maven-plugin</type>
+	  </dependency>
+	</dependencies>
+	
+	<build>
+	  <plugins>
+	    <plugin>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-plugin-plugin</artifactId>
+	      <version>2.5.1</version>
+	      <configuration>
+	        <goalPrefix>mule-rest</goalPrefix>
+	      </configuration>
+	      <executions>
+	        <execution>
+	          <id>generated-helpmojo</id>
+	          <goals>
+	            <goal>helpmojo</goal>
+	          </goals>
+	        </execution>
+	      </executions>
+	    </plugin>
+	    <plugin>
+	    	<groupId>org.apache.maven.plugins</groupId>
+	    	<artifactId>maven-compiler-plugin</artifactId>
+	    	<version>2.3.2</version>
+	    	<configuration>
+	    		<target>1.6</target>
+	    		<source>1.6</source>
+	    	</configuration>
+	    </plugin>
+	  </plugins>
+	</build>     
+</project>

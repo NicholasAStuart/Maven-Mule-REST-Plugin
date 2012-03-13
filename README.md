@@ -66,11 +66,11 @@ In order to post to the Mule Repository, you need only these permissions:
 		password
 	<td>
 		The password to the Mule Repository.
+	<td>
 <tr>
 	<td>
 		username
 	<td>
 		The username to the Mule Repository.
 	<td>
-		admin
 </table> 

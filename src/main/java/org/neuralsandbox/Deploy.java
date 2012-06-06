@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -37,6 +36,32 @@ import org.mule.tools.maven.plugin.MuleArchiver;
  */
 public class Deploy extends AbstractMojo {
 	public static final String DEFAULT_NAME = "MuleApplication";
+
+    /**
+     * List of exclusion elements (having groupId and artifactId children) to exclude from the
+     * application archive.
+     *
+     * @parameter
+     * @since 1.2
+     */
+    private List<Exclusion> exclusions;
+
+    /**
+     * List of inclusion elements (having groupId and artifactId children) to exclude from the
+     * application archive.
+     *
+     * @parameter
+     * @since 1.5
+     */
+    private List<Inclusion> inclusions;
+
+    /**
+     * Exclude all artifacts with Mule groupIds. Default is <code>true</code>.
+     *
+     * @parameter default-value="true"
+     * @since 1.4
+     */
+    private boolean excludeMuleDependencies;
 
     /**
      * The Maven project. Needed for information about dependencies.
@@ -123,9 +148,10 @@ public class Deploy extends AbstractMojo {
 			} catch (Exception e) {
 				getLog().info("No classes are present, but still compiling apps.");
 			}
-			ArtifactFilter filter = new ArtifactFilter(project, (List<Inclusion>)new ArrayList<Inclusion>(), (List<Exclusion>)new ArrayList<Exclusion>(), true);
+			ArtifactFilter filter = new ArtifactFilter(project, inclusions, exclusions, excludeMuleDependencies);
 			for(Artifact artifact : filter.getArtifactsToArchive()){
 				archiver.addLib(artifact.getFile());
+				
 				getLog().info("Added: " + artifact.getArtifactId());
 			}
 			archiver.createArchive();

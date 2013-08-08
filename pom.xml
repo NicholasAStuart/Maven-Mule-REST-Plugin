@@ -1,84 +1,109 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
-	<groupId>org.neuralsandbox</groupId>	
-	<artifactId>mule-rest</artifactId>
+
+	<groupId>org.neuralsandbox</groupId>
+	<artifactId>mule-mmc-rest-plugin</artifactId>
 	<version>1.1.0</version>
 	<packaging>maven-plugin</packaging>
+	<name>Mule MMC REST Plugin</name>
+	<description>Maven plugin for performing RESTful actions to the Mule ESB MMC</description>
+	<url>https://github.com/NicholasAStuart/Maven-Mule-REST-Plugin.git</url>
 	
 	<properties>
-	  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	
+
+	<scm>
+		<connection>scm:git:https://github.com/NicholasAStuart/Maven-Mule-REST-Plugin.git</connection>
+		<url>scm:git:https://github.com/NicholasAStuart/Maven-Mule-REST-Plugin.git</url>
+		<developerConnection>scm:git:https://github.com/NicholasAStuart/Maven-Mule-REST-Plugin.git</developerConnection>
+	</scm>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>nstuart</id>
+			<name>Nicholas A. Stuart</name>
+			<email>nicholasastuart@gmail.com</email>
+		</developer>
+	</developers>
+
 	<dependencies>
-	  <dependency>
-	    <groupId>org.apache.maven</groupId>
-	    <artifactId>maven-plugin-api</artifactId>
-	    <version>3.0.3</version>
-	  </dependency>
-	  <dependency>
-	  	<groupId>org.apache.httpcomponents</groupId>
-	  	<artifactId>httpclient</artifactId>
-	  	<version>4.1.2</version>
-	  </dependency>
-	  <dependency>
-	  	<groupId>org.apache.httpcomponents</groupId>
-	  	<artifactId>httpcore</artifactId>
-	  	<version>4.1.2</version>
-	  </dependency>
-	  <dependency>
-	  	<groupId>org.apache.httpcomponents</groupId>
-	  	<artifactId>httpmime</artifactId>
-	  	<version>4.1.2</version>
-	  </dependency>
-	  <dependency>
-	  	<groupId>org.mule.tools</groupId>
-	  	<artifactId>maven-mule-plugin</artifactId>
-	  	<version>1.7</version>
-	  	<type>maven-plugin</type>
-	  </dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-plugin-api</artifactId>
+			<version>3.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>4.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.tools</groupId>
+			<artifactId>maven-mule-plugin</artifactId>
+			<version>1.7</version>
+			<type>maven-plugin</type>
+		</dependency>
 	</dependencies>
 	<build>
-	  <plugins>
-	    <plugin>
-	      <groupId>org.apache.maven.plugins</groupId>
-	      <artifactId>maven-plugin-plugin</artifactId>
-	      <version>2.5.1</version>
-	      <configuration>
-	        <goalPrefix>mule-rest</goalPrefix>
-	      </configuration>
-	      <executions>
-	        <execution>
-	          <id>generated-helpmojo</id>
-	          <goals>
-	            <goal>helpmojo</goal>
-	          </goals>
-	        </execution>
-	      </executions>
-	    </plugin>
-	    <plugin>
-	    	<groupId>org.apache.maven.plugins</groupId>
-	    	<artifactId>maven-compiler-plugin</artifactId>
-	    	<version>2.3.2</version>
-	    	<configuration>
-	    		<target>1.6</target>
-	    		<source>1.6</source>
-	    	</configuration>
-	    </plugin>
-	  </plugins>
-	</build>     
-    <distributionManagement>
-        <repository>
-            <id>muleforge-releases</id>
-            <name>MuleForge Snapshot Repository</name>
-            <url>http://repository.mulesoft.org/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>muleforge-snapshots</id>
-            <name>MuleForge Repository</name>
-            <url>http://repository.mulesoft.org/snapshots/</url>
-            <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>
-    </distributionManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-plugin-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<goalPrefix>mule-rest</goalPrefix>
+				</configuration>
+				<executions>
+					<execution>
+						<id>generated-helpmojo</id>
+						<goals>
+							<goal>helpmojo</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<target>1.6</target>
+					<source>1.6</source>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<distributionManagement>
+		<repository>
+			<id>muleforge-releases</id>
+			<name>MuleForge Snapshot Repository</name>
+			<url>http://repository.mulesoft.org/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>muleforge-snapshots</id>
+			<name>MuleForge Repository</name>
+			<url>http://repository.mulesoft.org/snapshots/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
 </project>

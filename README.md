@@ -2,7 +2,7 @@
 
 This is a project to utilize the RESTful interface that is provided for the Management console on Mule ESB's Enterprise Edition. 
 
-This project makes heavy use of the already existing [maven-mule-plugin](https://github.com/mulesoft/maven-mule-plugin). Use of their archiving, dependency management were used as it was available to do a lot of the legwork with it's existing code.
+This plugin wait that you have configured the [maven-mule-plugin](https://github.com/mulesoft/maven-mule-plugin) to generated the mule application archive
 
 This is a personal project and is not affiliated with MuleSoft or the maven mule plugin in any way.
 
@@ -13,9 +13,9 @@ Example:
 		<build>
 			<plugins>
 				<plugin>
-					<groupId>org.neuralsandbox</groupId>
-					<artifactId>mule-rest</artifactId>
-					<version>1.0.0-SNAPSHOT</version>
+					<groupId>org.redmage</groupId>
+					<artifactId>mule-mmc-rest-plugin</artifactId>
+					<version>1.1.0</version>
 				</plugin>
 			</plugins>
 		</build>
@@ -26,7 +26,13 @@ Example:
 
 There is only one goal, deploy. To call the plugin, do the following
 
-	mule-rest:deploy
+	mule-mmc-rest-plugin:deploy
+	
+This goal will
+*	upload the mule application archive to the MMC Repository
+*	delete an existing deployment having the same application name
+*	create a new deployment this the uploaded archive, with target the given serverGroup
+*	perform a deploy request to make MMC deploy into target server group
 
 ## Security ##
 In order to post to the Mule Repository, you need only these permissions:
@@ -42,11 +48,11 @@ In order to post to the Mule Repository, you need only these permissions:
 		<th>Default
 <tr>
 	<td>
-		muleRepositoryUrl
+		muleApiUrl
 	<td>
-		The URL of the Mule MMC, with the path to the repository(usually .../api/repository)
+		The URL of the Mule MMC API (usually .../api)
 	<td>
-		http://localhost:8585/mmc/api/repository
+		http://localhost:8585/mmc/api
 <tr>
 	<td>
 		name
@@ -63,14 +69,20 @@ In order to post to the Mule Repository, you need only these permissions:
 		Current Time, in MM-dd-yyyy HH:mm:ss format
 <tr>
 	<td>
+		serverGroup
+	<td>
+		The name of the target Mule serverGroup
+	<td>
+<tr>
+	<td>
 		password
 	<td>
-		The password to the Mule Repository.
+		The password to the Mule MMC API.
 	<td>
 <tr>
 	<td>
 		username
 	<td>
-		The username to the Mule Repository.
+		The username to the Mule MMC API.
 	<td>
 </table> 

@@ -2,7 +2,7 @@
 
 This is a project to utilize the RESTful interface that is provided for the Management console on Mule ESB's Enterprise Edition. 
 
-This plugin wait that you have configured the [maven-mule-plugin](https://github.com/mulesoft/maven-mule-plugin) to generated the mule application archive
+This plugin assumes that you have configured the [maven-mule-plugin](https://github.com/mulesoft/maven-mule-plugin) to generated the mule application archive
 
 This is a personal project and is not affiliated with MuleSoft or the maven mule plugin in any way.
 

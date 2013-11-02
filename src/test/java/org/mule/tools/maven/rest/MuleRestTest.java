@@ -318,7 +318,7 @@ public class MuleRestTest {
     }
 
     @Test
-    public void testRestfullyUploadPackage() throws Exception {
+    public void testRestfullyUploadRepository() throws Exception {
 	String versionId = UUID.randomUUID()
 		.toString();
 	String applicationId = UUID.randomUUID()
@@ -337,7 +337,7 @@ public class MuleRestTest {
 		.withHeader("Authorization", "Basic YWRtaW46YWRtaW4=")
 		.withBody(generateUploadedPackageJson(versionId, applicationId))));
 
-	String returnedVersion = muleRest.restfullyUploadPackage(name, version, file);
+	String returnedVersion = muleRest.restfullyUploadRepository(name, version, file);
 	Assert.assertEquals("Version Id doesn't match", versionId, returnedVersion);
 
 	verify(postRequestedFor(urlMatching("/repository")).withHeader("Content-Type", containing("multipart/form-data"))

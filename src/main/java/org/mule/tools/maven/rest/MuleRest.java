@@ -7,8 +7,6 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -25,7 +23,6 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,7 +106,8 @@ public class MuleRest {
 
 	    processResponse(response);
 
-	    return jsonNode.path("id").asText();
+	    return jsonNode.path("id")
+		    .asText();
 	} finally {
 	    webClient.close();
 	}
@@ -155,8 +153,10 @@ public class MuleRest {
 	    JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
 	    JsonNode deploymentsNode = jsonNode.path("data");
 	    for (JsonNode deploymentNode : deploymentsNode) {
-		if (name.equals(deploymentNode.path("name").asText())) {
-		    deploymentId = deploymentNode.path("id").asText();
+		if (name.equals(deploymentNode.path("name")
+			.asText())) {
+		    deploymentId = deploymentNode.path("id")
+			    .asText();
 		    break;
 		}
 	    }
@@ -177,8 +177,10 @@ public class MuleRest {
 	    JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
 	    JsonNode groupsNode = jsonNode.path("data");
 	    for (JsonNode groupNode : groupsNode) {
-		if (serverGroup.equals(groupNode.path("name").asText())) {
-		    serverGroupId = groupNode.path("id").asText();
+		if (serverGroup.equals(groupNode.path("name")
+			.asText())) {
+		    serverGroupId = groupNode.path("id")
+			    .asText();
 		    break;
 		}
 	    }
@@ -202,11 +204,13 @@ public class MuleRest {
 	    JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
 	    JsonNode serversNode = jsonNode.path("data");
 	    for (JsonNode serverNode : serversNode) {
-		String serverId = serverNode.path("id").asText();
+		String serverId = serverNode.path("id")
+			.asText();
 
 		JsonNode groupsNode = serverNode.path("groups");
 		for (JsonNode groupNode : groupsNode) {
-		    if (serverGroup.equals(groupNode.path("name").asText())) {
+		    if (serverGroup.equals(groupNode.path("name")
+			    .asText())) {
 			serversId.add(serverId);
 		    }
 		}
@@ -217,7 +221,7 @@ public class MuleRest {
 	return serversId;
     }
 
-    public String restfullyUploadPackage(String name, String version, File packageFile) throws IOException {
+    public String restfullyUploadRepository(String name, String version, File packageFile) throws IOException {
 	WebClient webClient = getWebClient("repository");
 	webClient.type("multipart/form-data");
 
@@ -231,14 +235,19 @@ public class MuleRest {
 	    Response response = webClient.post(multipartBody);
 
 	    String responseObject = processResponse(response);
-	    Map<String, String> result = new HashMap<String, String>();
+
 	    ObjectMapper mapper = new ObjectMapper();
-	    result = mapper.readValue(responseObject, new TypeReference<Map<String, String>>() {
-	    });
-	    return result.get("versionId");
+	    JsonNode result = mapper.readTree(responseObject);
+	    return result.path("versionId")
+		    .asText();
 	} finally {
 	    webClient.close();
 	}
+    }
+
+    public void restfullyDeleteRepository(String name, String versionId) {
+	// TODO Auto-generated method stub
+	
     }
 
 }

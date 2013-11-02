@@ -92,7 +92,8 @@ public class Deploy extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-	StaticLoggerBinder.getSingleton().setLog(getLog());
+	StaticLoggerBinder.getSingleton()
+		.setLog(getLog());
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	if (name == null) {
@@ -100,7 +101,8 @@ public class Deploy extends AbstractMojo {
 	    name = DEFAULT_NAME;
 	}
 	if (version == null) {
-	    version = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(Calendar.getInstance().getTime());
+	    version = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(Calendar.getInstance()
+		    .getTime());
 	    logger.info("Version is not set, using a default of the timestamp: {}", version);
 	}
 	if (username == null || password == null) {
@@ -118,7 +120,7 @@ public class Deploy extends AbstractMojo {
 	try {
 	    validateProject(appDirectory);
 	    MuleRest muleRest = new MuleRest(muleApiUrl, username, password);
-	    String versionId = muleRest.restfullyUploadPackage(name, version, getMuleZipFile(outputDirectory, finalName));
+	    String versionId = muleRest.restfullyUploadRepository(name, version, getMuleZipFile(outputDirectory, finalName));
 	    String deploymentId = muleRest.restfullyCreateDeployment(serverGroup, name, versionId);
 	    muleRest.restfullyDeployDeploymentById(deploymentId);
 	} catch (Exception e) {

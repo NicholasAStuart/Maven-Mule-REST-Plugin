@@ -17,6 +17,8 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.cxf.helpers.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.AttachmentBuilder;
+import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.cxf.transport.http.HTTPException;
 import org.codehaus.jackson.JsonFactory;
@@ -226,11 +228,17 @@ public class MuleRest {
 	webClient.type("multipart/form-data");
 
 	try {
-	    Attachment nameAttachment = new Attachment("name", MediaType.TEXT_PLAIN, name);
-	    Attachment versionAttachment = new Attachment("version", MediaType.TEXT_PLAIN, version);
-	    Attachment fileAttachment = new Attachment("file", new FileInputStream(packageFile), null);
+	    Attachment nameAttachment = new AttachmentBuilder().id("name")
+		    .object(name)
+		    .contentDisposition(new ContentDisposition("form-data; name=\"name\""))
+		    .build();
+	    Attachment versionAttachment = new AttachmentBuilder().id("version")
+		    .object(version)
+		    .contentDisposition(new ContentDisposition("form-data; name=\"version\""))
+		    .build();
+	    Attachment fileAttachment = new Attachment("file", new FileInputStream(packageFile), new ContentDisposition("form-data; name=\"file\"; filename=\"" + packageFile.getName() + "\""));
 
-	    MultipartBody multipartBody = new MultipartBody(Arrays.asList(nameAttachment, versionAttachment, fileAttachment));
+	    MultipartBody multipartBody = new MultipartBody(Arrays.asList(fileAttachment, nameAttachment, versionAttachment), MediaType.MULTIPART_FORM_DATA_TYPE, true);
 
 	    Response response = webClient.post(multipartBody);
 
@@ -244,10 +252,4 @@ public class MuleRest {
 	    webClient.close();
 	}
     }
-
-    public void restfullyDeleteRepository(String name, String versionId) {
-	// TODO Auto-generated method stub
-	
-    }
-
 }

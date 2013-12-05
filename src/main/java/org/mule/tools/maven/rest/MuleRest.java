@@ -80,6 +80,8 @@ public class MuleRest {
 	restfullyDeleteDeployment(name);
 
 	WebClient webClient = getWebClient("deployments");
+    webClient.type(MediaType.APPLICATION_JSON_TYPE);
+
 
 	try {
 	    StringWriter stringWriter = new StringWriter();

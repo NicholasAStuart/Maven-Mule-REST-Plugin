@@ -101,7 +101,7 @@ public class Deploy extends AbstractMojo {
 	    name = DEFAULT_NAME;
 	}
 	if (version == null) {
-	    version = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(Calendar.getInstance()
+	    version = new SimpleDateFormat("MM-dd-yyyy-HH:mm:ss").format(Calendar.getInstance()
 		    .getTime());
 	    logger.info("Version is not set, using a default of the timestamp: {}", version);
 	}

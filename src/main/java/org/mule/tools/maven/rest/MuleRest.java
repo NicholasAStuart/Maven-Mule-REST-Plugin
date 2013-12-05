@@ -106,8 +106,6 @@ public class MuleRest {
 	    InputStream responseStream = (InputStream) response.getEntity();
 	    JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
 
-	    processResponse(response);
-
 	    return jsonNode.path("id")
 		    .asText();
 	} finally {

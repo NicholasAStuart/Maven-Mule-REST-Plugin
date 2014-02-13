@@ -82,6 +82,8 @@ public class MuleRest {
 	restfullyDeleteDeployment(name);
 
 	WebClient webClient = getWebClient("deployments");
+    webClient.type(MediaType.APPLICATION_JSON_TYPE);
+
 
 	try {
 	    StringWriter stringWriter = new StringWriter();
@@ -105,8 +107,6 @@ public class MuleRest {
 	    Response response = webClient.post(stringWriter.toString());
 	    InputStream responseStream = (InputStream) response.getEntity();
 	    JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
-
-	    processResponse(response);
 
 	    return jsonNode.path("id")
 		    .asText();

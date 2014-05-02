@@ -13,6 +13,15 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,7 +47,9 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 public class MuleRestTest {
 
-    @Rule
+    private static final String APPLICATION_VERSION_ID = "local$66b3cf20-6e76-4fd9-8dc6-a50a804069a0";
+
+	@Rule
     public WireMockRule wireMockRule = new WireMockRule(12312);
 
     public static MuleRest muleRest;
@@ -137,6 +148,41 @@ public class MuleRestTest {
 	String json = stringWriter.toString();
 	stringWriter.close();
 
+	return json;
+    }
+    
+    private String generateApplicationsJson(String applicationName, String version) throws Exception{
+	StringWriter stringWriter = new StringWriter();
+	JsonFactory jsonFactory = new JsonFactory();
+	JsonGenerator jsonGenerator = jsonFactory.createGenerator(stringWriter);
+	
+	jsonGenerator.writeStartObject();
+	jsonGenerator.writeNumberField("total", 1L);
+	jsonGenerator.writeFieldName("data");
+	
+	jsonGenerator.writeStartArray();
+	jsonGenerator.writeStartObject();
+	jsonGenerator.writeStringField("name", applicationName);
+	jsonGenerator.writeStringField("id", "local$0edb159a-5961-4384-bdf8-6ebfc5b9d6bf");
+	jsonGenerator.writeStringField("href", "http://localhost:8080/mmc/api/repository/local$0edb159a-5961-4384-bdf8-6ebfc5b9d6bf");
+	
+	jsonGenerator.writeFieldName("versions");
+	jsonGenerator.writeStartArray();
+	jsonGenerator.writeStartObject();
+	jsonGenerator.writeStringField("name", version);
+	jsonGenerator.writeStringField("id", APPLICATION_VERSION_ID);
+	jsonGenerator.writeStringField("parentPath", "/Applications/mule-example-hello");
+	jsonGenerator.writeEndObject();
+	jsonGenerator.writeEndArray();
+	
+	jsonGenerator.writeEndObject();
+	jsonGenerator.writeEndArray();
+	
+	jsonGenerator.writeEndObject();
+	jsonGenerator.close();
+	String json = stringWriter.toString();
+	stringWriter.close();
+	
 	return json;
     }
 
@@ -316,6 +362,33 @@ public class MuleRestTest {
 	Assert.assertTrue("Server Id doesn't match", servers.contains(serverId));
 	verifyGetServers();
     }
+    
+    @Test
+    public void testRestfullyGetApplicationId() throws Exception{
+    String applicationName = "My_Mule_App";
+    String version = "1.0-SNAPSHOT";
+    
+    stubFor(get(urlEqualTo("/repository")).willReturn(aResponse().withStatus(200)
+    		.withHeader("Content-Type", "application/json")
+    		.withHeader("Authorization", "Basic YWRtaW46YWRtaW4=")
+    		.withBody(generateApplicationsJson(applicationName, version))));
+    
+    String versionId = muleRest.restfullyGetApplicationId(applicationName, version);
+    
+    assertEquals(APPLICATION_VERSION_ID, versionId);
+	verify(getRequestedFor(urlMatching("/repository")).withHeader("Authorization", equalTo("Basic YWRtaW46YWRtaW4=")));
+	
+	assertNull(muleRest.restfullyGetApplicationId(applicationName, "wrong version"));
+	assertNull(muleRest.restfullyGetApplicationId("wrong application name", version));	
+    }
+    
+    @Test
+    public void testRestfullyDeleteApplicationById() throws Exception{
+    stubFor(delete(urlEqualTo("/repository/"+APPLICATION_VERSION_ID)).willReturn(aResponse().withStatus(200)
+    		.withHeader("Authorization", "Basic YWRtaW46YWRtaW4=")));
+    muleRest.restfullyDeleteApplicationById(APPLICATION_VERSION_ID);
+    verify(deleteRequestedFor(urlEqualTo("/repository/"+APPLICATION_VERSION_ID)));
+    }
 
     @Test
     public void testRestfullyUploadRepository() throws Exception {
@@ -345,6 +418,41 @@ public class MuleRestTest {
 		.withRequestBody(containing("Content-Type: text/plain\r\nContent-Transfer-Encoding: binary\r\nContent-ID: <name>\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\n" + name + "\r\n"))
 		.withRequestBody(containing("Content-Type: text/plain\r\nContent-Transfer-Encoding: binary\r\nContent-ID: <version>\r\nContent-Disposition: form-data; name=\"version\"\r\n\r\n" + version + "\r\n"))
 		.withRequestBody(containing("Content-Type: application/octet-stream\r\nContent-Transfer-Encoding: binary\r\nContent-ID: <file>\r\nContent-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"\r\n" + fileContent + "\r\n")));
+    }
+    
+    @Test
+    public void testRestfullyDeleteApplication() throws Exception{
+	String applicationName = "My_Mule_App";
+	String version = "1.0-SNAPSHOT";
+	
+	MuleRest muleRestSpy = spy(muleRest);
+	doReturn(APPLICATION_VERSION_ID).when(muleRestSpy).restfullyGetApplicationId(applicationName, version);
+	doNothing().when(muleRestSpy).restfullyDeleteApplicationById(anyString());
+	
+	muleRestSpy.restfullyDeleteApplication(applicationName, version);
+	
+	org.mockito.Mockito.verify(muleRestSpy).restfullyDeleteApplicationById(APPLICATION_VERSION_ID);
+    }
+    
+    @Test
+    public void testRestfullyDeleteApplicationDoesNotExist() throws Exception{
+	String applicationName = "My_Mule_App";
+	String futureVersion = "5.0-SNAPSHOT";
+	
+	MuleRest muleRestSpy = spy(muleRest);
+	doReturn(null).when(muleRestSpy).restfullyGetApplicationId(applicationName, futureVersion);
+	doNothing().when(muleRestSpy).restfullyDeleteApplicationById(anyString());
+	
+	muleRestSpy.restfullyDeleteApplication(applicationName, futureVersion);
+	
+	org.mockito.Mockito.verify(muleRestSpy, never()).restfullyDeleteApplicationById(anyString());
+    }
+    
+    @Test
+    public void testIsSnapshotVersion(){
+    assertTrue(muleRest.isSnapshotVersion("1.0-SNAPSHOT"));
+    assertTrue(muleRest.isSnapshotVersion("2.0.1-SNAPSHOT"));
+    assertFalse(muleRest.isSnapshotVersion("1.0"));
     }
 
     private void verifyCreateDeployment(String serverId, String name, String versionId) throws IOException {

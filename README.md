@@ -15,7 +15,7 @@ Example:
 				<plugin>
 					<groupId>org.mule.tools</groupId>
 					<artifactId>mule-mmc-rest-plugin</artifactId>
-					<version>1.1.1-SNAPSHOT</version>
+					<version>1.2.0-SNAPSHOT</version>
 				</plugin>
 			</plugins>
 		</build>
@@ -29,6 +29,7 @@ There is only one goal, deploy. To call the plugin, do the following
 	mule-mmc-rest-plugin:deploy
 	
 This goal will
+*   delete an existing mule application archive from the MMC Repository if version contains "SNAPSHOT"
 *	upload the mule application archive to the MMC Repository
 *	delete an existing deployment having the same application name
 *	create a new deployment this the uploaded archive, with target the given serverGroup

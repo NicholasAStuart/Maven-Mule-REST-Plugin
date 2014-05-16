@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 public class MuleRest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final Logger logger = LoggerFactory.getLogger(MuleRest.class);
+    private static final String SNAPSHOT = "SNAPSHOT";
 
     private URL mmcUrl;
     private String username;
@@ -167,6 +168,33 @@ public class MuleRest {
 	}
 	return deploymentId;
     }
+    
+    public String restfullyGetApplicationId(String name, String version) throws IOException{
+    	WebClient webClient = getWebClient("repository");
+    	
+    	String applicationId = null;
+    	try{
+    		Response response = webClient.get();
+    		
+    		InputStream responseStream = (InputStream) response.getEntity();
+    		JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
+    		JsonNode applicationsNode = jsonNode.path("data");
+    		for(JsonNode applicationNode : applicationsNode){
+    			if(name.equals(applicationNode.path("name").asText())){
+    				JsonNode versionsNode = applicationNode.path("versions");
+    				for(JsonNode versionNode : versionsNode){
+    					if(version.equals(versionNode.path("name").asText())){
+    						applicationId = versionNode.get("id").asText();
+    						break;
+    					}
+    				}
+    			}
+    		}
+    	}finally{
+    		webClient.close();
+    	}
+    	return applicationId;
+    }
 
     public final String restfullyGetServerGroupId(String serverGroup) throws IOException {
 	String serverGroupId = null;
@@ -228,6 +256,10 @@ public class MuleRest {
 	webClient.type("multipart/form-data");
 
 	try {
+		//delete application first
+		if(isSnapshotVersion(version)){
+			restfullyDeleteApplication(name, version);
+		}
 	    Attachment nameAttachment = new AttachmentBuilder().id("name")
 		    .object(name)
 		    .contentDisposition(new ContentDisposition("form-data; name=\"name\""))
@@ -252,4 +284,27 @@ public class MuleRest {
 	    webClient.close();
 	}
     }
+
+	public void restfullyDeleteApplicationById(String applicationVersionId) throws IOException {
+	WebClient webClient = getWebClient("repository", applicationVersionId);
+
+	try {
+	    Response response = webClient.delete();
+	    processResponse(response);
+	} finally {
+	    webClient.close();
+	}
+		
+	}
+
+	public void restfullyDeleteApplication(String applicationName, String version) throws IOException {
+	String applicationVersionId = restfullyGetApplicationId(applicationName, version);
+	if(applicationVersionId != null){
+		restfullyDeleteApplicationById(applicationVersionId);
+	}
+	}
+	
+	protected boolean isSnapshotVersion(String version){
+		return version.contains(SNAPSHOT);
+	}
 }

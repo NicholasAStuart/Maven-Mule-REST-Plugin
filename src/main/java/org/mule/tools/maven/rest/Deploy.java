@@ -89,6 +89,8 @@ public class Deploy extends AbstractMojo {
      * @required
      */
     protected String serverGroup;
+    
+    protected MuleRest muleRest;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -119,7 +121,7 @@ public class Deploy extends AbstractMojo {
 	}
 	try {
 	    validateProject(appDirectory);
-	    MuleRest muleRest = new MuleRest(muleApiUrl, username, password);
+	    muleRest = buildMuleRest();
 	    String versionId = muleRest.restfullyUploadRepository(name, version, getMuleZipFile(outputDirectory, finalName));
 	    String deploymentId = muleRest.restfullyCreateDeployment(serverGroup, name, versionId);
 	    muleRest.restfullyDeployDeploymentById(deploymentId);
@@ -128,7 +130,7 @@ public class Deploy extends AbstractMojo {
 	}
     }
 
-    private static final File getMuleZipFile(File outputDirectory, String filename) throws MojoFailureException {
+    protected File getMuleZipFile(File outputDirectory, String filename) throws MojoFailureException {
 	File file = new File(outputDirectory, filename + ".zip");
 	if (!file.exists()) {
 	    throw new MojoFailureException("There no application ZIP file generated : check that you have configured the maven-mule-plugin to generated the this file");
@@ -136,13 +138,17 @@ public class Deploy extends AbstractMojo {
 	return file;
     }
 
-    private static final void validateProject(File appDirectory) throws MojoExecutionException {
+    protected void validateProject(File appDirectory) throws MojoExecutionException {
 	File muleConfig = new File(appDirectory, "mule-config.xml");
 	File deploymentDescriptor = new File(appDirectory, "mule-deploy.properties");
 
 	if ((muleConfig.exists() == false) && (deploymentDescriptor.exists() == false)) {
 	    throw new MojoExecutionException("No mule-config.xml or mule-deploy.properties");
 	}
+    }
+    
+    protected MuleRest buildMuleRest(){
+    	return new MuleRest(muleApiUrl, username, password);
     }
 
 }

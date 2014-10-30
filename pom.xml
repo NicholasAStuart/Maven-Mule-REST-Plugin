@@ -3,7 +3,7 @@
 
 	<groupId>com.github.nicholasastuart</groupId>
 	<artifactId>mule-mmc-rest-plugin</artifactId>
-	<version>1.2.1</version>
+	<version>1.2.2-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<name>Mule MMC REST Plugin</name>
 	<description>Maven plugin for performing RESTful actions to the Mule ESB MMC</description>

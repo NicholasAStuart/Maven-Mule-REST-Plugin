@@ -49,6 +49,14 @@ public class Deploy extends AbstractMojo {
     protected String name;
 
     /**
+     * The name that the application will be deployed as. Default is
+     * same as ${name}
+     *
+     * @parameter expression="${deploymentName}"
+     */
+    protected String deploymentName;
+
+    /**
      * The version that the application will be deployed as. Default is the
      * current time in milliseconds.
      * 
@@ -102,6 +110,10 @@ public class Deploy extends AbstractMojo {
 	    logger.info("Name is not set, using default \"{}\"", DEFAULT_NAME);
 	    name = DEFAULT_NAME;
 	}
+	if (deploymentName == null) {
+	    logger.info("DeploymentName is not set, using application name \"{}\"", name);
+	    deploymentName = name;
+	}
 	if (version == null) {
 	    version = new SimpleDateFormat("MM-dd-yyyy-HH:mm:ss").format(Calendar.getInstance()
 		    .getTime());
@@ -123,7 +135,7 @@ public class Deploy extends AbstractMojo {
 	    validateProject(appDirectory);
 	    muleRest = buildMuleRest();
 	    String versionId = muleRest.restfullyUploadRepository(name, version, getMuleZipFile(outputDirectory, finalName));
-	    String deploymentId = muleRest.restfullyCreateDeployment(serverGroup, name, versionId);
+	    String deploymentId = muleRest.restfullyCreateDeployment(serverGroup, deploymentName, versionId);
 	    muleRest.restfullyDeployDeploymentById(deploymentId);
 	} catch (Exception e) {
 	    throw new MojoFailureException("Error in attempting to deploy archive: " + e.toString(), e);

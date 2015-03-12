@@ -63,6 +63,13 @@ In order to post to the Mule Repository, you need only these permissions:
 		MuleApplication
 <tr>
 	<td>
+		deploymentName
+	<td>
+		What to name the deployment when it is uploaded to the repository
+	<td>
+		same as <code>name</code>
+<tr>
+	<td>
 		version
 	<td>
 		What version to give the software when it is uploaded to the repository

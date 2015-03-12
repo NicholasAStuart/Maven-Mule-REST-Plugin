@@ -83,10 +83,17 @@ public class DeployTest {
     }
 
     @Test(expected = MojoFailureException.class)
-    public void testServerGRoupNull() throws MojoExecutionException, MojoFailureException {
+    public void testServerGroupNull() throws MojoExecutionException, MojoFailureException {
 	deploy.serverGroup = null;
 	deploy.execute();
 	Assert.fail("Exception should have been thrown before this is called");
+    }
+
+    @Test
+    public void testDeploymentNameNull() throws MojoExecutionException, MojoFailureException {
+        deploy.deploymentName = null;
+        deploy.execute();
+        Assert.assertEquals("When null, deploymentName should be same as name", deploy.name, deploy.deploymentName);
     }
     
     @Test

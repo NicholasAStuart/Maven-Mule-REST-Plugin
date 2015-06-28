@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -73,11 +74,20 @@ public class MuleRest {
 	}
     }
 
-    public String restfullyCreateDeployment(String serverGroup, String name, String versionId) throws IOException {
-	Set<String> serversIds = restfullyGetServers(serverGroup);
-	if (serversIds.isEmpty()) {
-	    throw new IllegalArgumentException("No server found into group : " + serverGroup);
-	}
+    public String restfullyCreateDeployment(String serverGroup, String name, String clusterName, String versionId) throws IOException {
+		Set<String> serversIds = new TreeSet<String>();
+		Set<String> clusterIds = new TreeSet<String>();
+		if(clusterName==null) {
+			serversIds = restfullyGetServers(serverGroup);
+			if (serversIds.isEmpty()) {
+				throw new IllegalArgumentException("No server found into group : " + serverGroup);
+			}
+		} else {
+			clusterIds = restfullyGetClusters(clusterName);
+			if (clusterIds.isEmpty()) {
+				throw new IllegalArgumentException("No cluster found with name : " + clusterName);
+			}
+		}
 
 	// delete existing deployment before creating new one
 	restfullyDeleteDeployment(name);
@@ -92,12 +102,21 @@ public class MuleRest {
 	    JsonGenerator jGenerator = jfactory.createJsonGenerator(stringWriter);
 	    jGenerator.writeStartObject(); // {
 	    jGenerator.writeStringField("name", name); // "name" : name
-	    jGenerator.writeFieldName("servers"); // "servers" :
-	    jGenerator.writeStartArray(); // [
-	    for (String serverId : serversIds) {
-		jGenerator.writeString(serverId); // "serverId"
-	    }
-	    jGenerator.writeEndArray(); // ]
+		if(clusterName==null) {
+			jGenerator.writeFieldName("servers"); // "servers" :
+			jGenerator.writeStartArray(); // [
+			for (String serverId : serversIds) {
+				jGenerator.writeString(serverId); // "serverId"
+			}
+			jGenerator.writeEndArray(); // ]
+		} else {
+			jGenerator.writeFieldName("clusters"); // "clusters" :
+			jGenerator.writeStartArray(); // [
+			for (String clusterId : clusterIds) {
+				jGenerator.writeString(clusterId); // "serverId"
+			}
+			jGenerator.writeEndArray(); // ]
+		}
 	    jGenerator.writeFieldName("applications"); // "applications" :
 	    jGenerator.writeStartArray(); // [
 	    jGenerator.writeString(versionId); // "applicationId"
@@ -250,6 +269,28 @@ public class MuleRest {
 	}
 	return serversId;
     }
+
+	public Set<String> restfullyGetClusters(String clusterName) throws IOException {
+		Set<String> clustersId = new TreeSet<String>();
+		WebClient webClient = getWebClient("clusters");
+
+		try {
+			Response response = webClient.get();
+			InputStream responseStream = (InputStream) response.getEntity();
+			JsonNode jsonNode = OBJECT_MAPPER.readTree(responseStream);
+			JsonNode serversNode = jsonNode.path("data");
+			for (JsonNode serverNode : serversNode) {
+				String id = serverNode.path("id").asText();
+				String name = serverNode.path("name").asText();
+				if(clusterName.equals(name)) {
+					clustersId.add(id);
+				}
+			}
+		} finally {
+			webClient.close();
+		}
+		return clustersId;
+	}
 
     public String restfullyUploadRepository(String name, String version, File packageFile) throws IOException {
 	WebClient webClient = getWebClient("repository");

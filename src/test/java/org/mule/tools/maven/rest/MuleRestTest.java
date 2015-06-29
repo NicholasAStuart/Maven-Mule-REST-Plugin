@@ -276,7 +276,7 @@ public class MuleRestTest {
 	stubCreateDeployment(deploymentId);
 	stubGetDeploymentIdByName(name, deploymentId);
 	stubDeleteDeploymentById(deploymentId);
-	muleRest.restfullyCreateDeployment(serverGroup, name, versionId);
+	muleRest.restfullyCreateDeployment(serverGroup, name, null, versionId);
 	verifyDeleteDeploymentById(deploymentId);
 	verifyGetDeploymentIdByName();
 	verifyGetServers();

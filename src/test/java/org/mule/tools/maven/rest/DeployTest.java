@@ -21,7 +21,8 @@ public class DeployTest {
 	private static final String SERVER_GROUP = "Development";
 	private static final String NAME = "MyMuleApp";
 	private static final String VERSION = "1.0-SNAPSHOT";
-	
+	private static final String CLUSTER_NAME = null;
+
     private Deploy deploy;
     
     private MuleRest mockMuleRest;
@@ -51,7 +52,7 @@ public class DeployTest {
 	mockMuleRest = mock(MuleRest.class);
 	when(deploy.buildMuleRest()).thenReturn(mockMuleRest);
 	when(mockMuleRest.restfullyUploadRepository(anyString(), anyString(), any(File.class))).thenReturn(VERSION_ID);
-	when(mockMuleRest.restfullyCreateDeployment(anyString(), anyString(), anyString())).thenReturn(DEPLOYMENT_ID);
+	when(mockMuleRest.restfullyCreateDeployment(anyString(), anyString(), null, anyString())).thenReturn(DEPLOYMENT_ID);
     }
 
     @Test(expected = MojoFailureException.class)
@@ -100,7 +101,7 @@ public class DeployTest {
     public void testHappyPath() throws Exception{
 	deploy.execute();
 	verify(mockMuleRest).restfullyUploadRepository(NAME, VERSION, null);
-	verify(mockMuleRest).restfullyCreateDeployment(SERVER_GROUP, NAME, VERSION_ID);
+	verify(mockMuleRest).restfullyCreateDeployment(SERVER_GROUP, NAME, CLUSTER_NAME, VERSION_ID);
 	verify(mockMuleRest).restfullyDeployDeploymentById(DEPLOYMENT_ID);
     }
 }

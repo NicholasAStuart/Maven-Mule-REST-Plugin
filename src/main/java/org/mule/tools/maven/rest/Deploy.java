@@ -97,8 +97,14 @@ public class Deploy extends AbstractMojo {
      * @required
      */
     protected String serverGroup;
-    
-    protected MuleRest muleRest;
+
+	/**
+	 * @parameter expression="${clusterName}"
+	 */
+	protected String clusterName;
+
+
+	protected MuleRest muleRest;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -131,11 +137,12 @@ public class Deploy extends AbstractMojo {
 	if (serverGroup == null) {
 	    throw new MojoFailureException("serverGroup not set.");
 	}
+
 	try {
 	    validateProject(appDirectory);
 	    muleRest = buildMuleRest();
 	    String versionId = muleRest.restfullyUploadRepository(name, version, getMuleZipFile(outputDirectory, finalName));
-	    String deploymentId = muleRest.restfullyCreateDeployment(serverGroup, deploymentName, versionId);
+	    String deploymentId = muleRest.restfullyCreateDeployment(serverGroup, deploymentName, clusterName, versionId);
 	    muleRest.restfullyDeployDeploymentById(deploymentId);
 	} catch (Exception e) {
 	    throw new MojoFailureException("Error in attempting to deploy archive: " + e.toString(), e);

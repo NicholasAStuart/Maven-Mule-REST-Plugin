@@ -13,9 +13,9 @@ Example:
 		<build>
 			<plugins>
 				<plugin>
-					<groupId>org.mule.tools</groupId>
+					<groupId>com.github.nicholasastuart</groupId>
 					<artifactId>mule-mmc-rest-plugin</artifactId>
-					<version>1.2.0-SNAPSHOT</version>
+					<version>1.2.0</version>
 				</plugin>
 			</plugins>
 		</build>
